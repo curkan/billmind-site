@@ -4,6 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>billmind — TUI for tracking subscriptions and recurring payments</title>
+
+<!-- SEO -->
+<meta name="description" content="billmind — a terminal UI for tracking subscriptions and recurring payments. Three notification stages, quiet hours, ntfy push to your phone. Free, open source, MIT-licensed.">
+<meta name="keywords" content="billmind, TUI, terminal, subscriptions, recurring payments, reminders, go, bubbletea, ntfy, cli, open source">
+<meta name="author" content="curkan">
+<meta name="theme-color" content="#0a0a0c">
+<link rel="canonical" href="https://curkan.github.io/billmind-site/">
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="favicon.svg">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://curkan.github.io/billmind-site/">
+<meta property="og:title" content="billmind — TUI for tracking subscriptions and recurring payments">
+<meta property="og:description" content="Never forget to pay for your VPS, domain, Netflix, or anything else — right from your terminal. Three notification stages, quiet hours, and push to your phone via ntfy.sh.">
+<meta property="og:image" content="https://curkan.github.io/billmind-site/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="billmind — TUI for tracking subscriptions">
+<meta property="og:site_name" content="billmind">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ru_RU">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://curkan.github.io/billmind-site/">
+<meta name="twitter:title" content="billmind — TUI for tracking subscriptions and recurring payments">
+<meta name="twitter:description" content="Never forget to pay for your VPS, domain, Netflix, or anything else — right from your terminal.">
+<meta name="twitter:image" content="https://curkan.github.io/billmind-site/og-image.png">
+<meta name="twitter:image:alt" content="billmind — TUI for tracking subscriptions">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -94,24 +127,44 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 7px 14px;
+    height: 32px;
+    padding: 0 14px;
+    box-sizing: border-box;
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 6px;
     color: var(--text);
     font-size: 13px;
     font-weight: 500;
+    line-height: 1;
     text-decoration: none;
     transition: all 0.15s;
   }
   .star-btn:hover { border-color: var(--lavender); color: var(--lavender); }
   .star-btn svg { width: 14px; height: 14px; }
+  .star-count {
+    display: none;
+    padding: 2px 8px;
+    margin-left: 2px;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--lavender);
+    line-height: 1.4;
+  }
+  .star-count.loaded { display: inline-block; }
 
   /* LANGUAGE SWITCHER */
   .lang-switch {
     display: inline-flex;
+    align-items: stretch;
     gap: 2px;
+    height: 32px;
     padding: 3px;
+    box-sizing: border-box;
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -123,7 +176,8 @@
     color: var(--text-dim);
     font-size: 11px;
     font-weight: 600;
-    padding: 4px 10px;
+    padding: 0 10px;
+    line-height: 1;
     border-radius: 4px;
     cursor: pointer;
     font-family: inherit;
@@ -258,7 +312,7 @@
     margin: 80px auto 0;
     padding: 0 40px;
     display: grid;
-    grid-template-columns: 180px 1fr 180px;
+    grid-template-columns: 140px 1fr 140px;
     gap: 40px;
     align-items: start;
   }
@@ -329,8 +383,16 @@
     z-index: 2;
   }
 
-  /* Bottom annotation under TUI */
+  /* Bottom annotations under TUI */
+  .annotations-bottom {
+    display: flex;
+    justify-content: space-around;
+    gap: 40px;
+    margin-top: 0;
+  }
+
   .annotation-bottom {
+    flex: 1;
     text-align: center;
     margin-top: 0;
     font-family: 'JetBrains Mono', monospace;
@@ -373,23 +435,6 @@
       0 20px 60px rgba(0, 0, 0, 0.5),
       0 0 80px rgba(183, 148, 246, 0.08);
   }
-
-  .tui-tabs {
-    display: flex;
-    gap: 6px;
-    padding: 10px 14px 0;
-    background: var(--bg-panel);
-    border-bottom: 1px solid var(--border-soft);
-  }
-
-  .tab {
-    padding: 6px 16px;
-    border-radius: 6px 6px 0 0;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  .tab.active { background: var(--yellow-bg); color: var(--yellow-text); }
-  .tab.inactive { color: var(--text-dim); background: var(--bg-panel-2); }
 
   .tui-header {
     padding: 16px 24px 12px;
@@ -623,75 +668,69 @@
     line-height: 1.1;
   }
 
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  .feature {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px;
-    transition: all 0.2s;
-    position: relative;
+  .features-man {
+    border: 1px solid var(--border-soft);
+    border-radius: 10px;
+    background: rgba(23, 23, 26, 0.4);
     overflow: hidden;
   }
 
-  .feature::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--lavender), transparent);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .feature:hover {
-    border-color: rgba(183, 148, 246, 0.4);
-    transform: translateY(-3px);
-  }
-  .feature:hover::before { opacity: 1; }
-
-  .feature-icon {
-    width: 44px;
-    height: 44px;
-    background: rgba(183, 148, 246, 0.1);
-    border: 1px solid rgba(183, 148, 246, 0.25);
-    border-radius: 10px;
+  .features-man-head {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    background: var(--bg-panel-2);
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 20px;
+    gap: 10px;
+  }
+  .features-man-head::before {
+    content: '$';
     color: var(--lavender);
-    margin-bottom: 18px;
-    font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
   }
 
-  .feature h4 {
-    font-size: 16px;
-    color: #fff;
-    margin-bottom: 10px;
+  .feature-row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 32px;
+    padding: 22px 28px;
+    border-bottom: 1px dashed var(--border-soft);
+    transition: background 0.15s;
+  }
+  .feature-row:last-child { border-bottom: none; }
+  .feature-row:hover { background: rgba(183, 148, 246, 0.03); }
+
+  .feature-key {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--lavender);
+    font-size: 13.5px;
     font-weight: 600;
+    letter-spacing: 0.3px;
+    padding-top: 2px;
+    white-space: nowrap;
+  }
+  .feature-key::before {
+    content: '--';
+    color: var(--text-muted);
+    margin-right: 6px;
+    font-weight: 400;
   }
 
-  .feature p {
-    font-size: 14px;
+  .feature-desc {
     color: var(--text-dim);
+    font-size: 14.5px;
     line-height: 1.65;
   }
-
-  .feature code {
+  .feature-desc code {
     font-family: 'JetBrains Mono', monospace;
     background: var(--bg-panel-2);
     padding: 1px 6px;
     border-radius: 3px;
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--lavender);
   }
 
@@ -772,9 +811,9 @@
   }
 
   .install-tabs {
+    margin-top: 32px;
     display: flex;
     gap: 4px;
-    margin-top: 32px;
     margin-bottom: 16px;
     border-bottom: 1px solid var(--border);
   }
@@ -803,15 +842,77 @@
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 20px 24px;
+    overflow: hidden;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    max-width: 780px;
-    gap: 16px;
   }
+
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-panel-2);
+    border-bottom: 1px solid var(--border-soft);
+    position: relative;
+  }
+  .term-dots { display: inline-flex; gap: 6px; }
+  .term-dots i {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: block;
+  }
+  .term-dots i:nth-child(1) { background: #ff5f56; }
+  .term-dots i:nth-child(2) { background: #ffbd2e; }
+  .term-dots i:nth-child(3) { background: #27c93f; }
+  .term-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+  .term-bar .copy-btn {
+    margin-left: auto;
+    padding: 3px 10px;
+    font-size: 10.5px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .term-body {
+    padding: 18px 22px 20px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text);
+  }
+  .term-body .cmd {
+    display: block;
+    word-break: break-word;
+  }
+  .term-body .cmd .prompt {
+    color: var(--lavender);
+    margin-right: 8px;
+    font-weight: 700;
+    user-select: none;
+  }
+  /* shell syntax highlighting */
+  .t-cmd  { color: var(--lavender); font-weight: 600; }
+  .t-sub  { color: var(--cyan); }
+  .t-flag { color: var(--orange); }
+  .t-arg  { color: var(--text); }
+  .t-url  { color: var(--green); }
+  .t-op   { color: var(--text-muted); }
+
+  .term-body .comment {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border-soft);
+  }
+  .term-body .comment::before { content: '# '; color: var(--lavender); }
 
   .install-code code {
     color: var(--text);
@@ -896,8 +997,13 @@
       padding-right: 24px;
     }
     .demo, .side-panels { padding-left: 16px; padding-right: 16px; }
-    .side-panels, .features-grid, .stages-grid {
+    .side-panels, .stages-grid {
       grid-template-columns: 1fr;
+    }
+    .feature-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+      padding: 18px 20px;
     }
     .section-title { font-size: 32px; }
     .tui-row { grid-template-columns: 20px 1fr 70px; gap: 8px; font-size: 11px; }
@@ -917,14 +1023,15 @@
     <a href="#stages" data-i18n="nav.notifications">Notifications</a>
     <a href="#install" data-i18n="nav.install">Install</a>
     <a href="https://github.com/curkan/billmind" target="_blank" data-i18n="nav.docs">Docs</a>
-    <a href="https://github.com/curkan/billmind" class="star-btn" target="_blank">
-      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
-      <span data-i18n="nav.star">Star</span>
-    </a>
     <div class="lang-switch" role="group" aria-label="Language">
       <button type="button" data-lang="en" class="active">EN</button>
       <button type="button" data-lang="ru">RU</button>
     </div>
+    <a href="https://github.com/curkan/billmind" class="star-btn" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
+      <span data-i18n="nav.star">Star</span>
+      <span class="star-count" id="star-count" aria-label="GitHub stars"></span>
+    </a>
   </nav>
 </header>
 
@@ -950,7 +1057,6 @@
 <section class="demo-annotated">
   <!-- Left annotations -->
   <div class="annotations left">
-    <div class="annotation" data-i18n-html="annot.tabs">Tabs like tmux<br>w/ active session</div>
     <div class="annotation" data-i18n-html="annot.list">List of subscriptions<br>w/ due date</div>
     <div class="annotation" data-i18n-html="annot.vim">Vim-style<br>selection</div>
   </div>
@@ -958,11 +1064,6 @@
   <!-- TUI -->
   <div class="tui-col">
   <div class="tui">
-    <div class="tui-tabs">
-      <div class="tab active">billmind</div>
-      <div class="tab inactive">4:billmind</div>
-    </div>
-
     <div class="tui-header">
       <span class="name">billmind</span>
       <span class="total" data-i18n="tui.total">Total: 10</span>
@@ -977,7 +1078,7 @@
         <span data-i18n="tui.h_tags">Tags</span>
         <span></span>
       </div>
-      <div class="tui-row item selected">
+      <div class="tui-row item selected" data-url="https://goga.zone">
         <span class="circle">●</span>
         <span>goga.zone</span>
         <span class="due">in 3d</span>
@@ -991,7 +1092,7 @@
         <span class="due">in 8d</span>
         <span class="interval">monthly</span>
         <span class="tag-alt">#dev-tools</span>
-        <span class="link-icon">🔗</span>
+        <span></span>
       </div>
       <div class="tui-row item">
         <span class="circle">○</span>
@@ -999,7 +1100,7 @@
         <span class="due">in 12d</span>
         <span class="interval">monthly</span>
         <span class="tag">#vps</span>
-        <span class="link-icon">🔗</span>
+        <span></span>
       </div>
       <div class="tui-row item">
         <span class="circle">○</span>
@@ -1007,7 +1108,7 @@
         <span class="due">in 14d</span>
         <span class="interval">monthly</span>
         <span class="tag">#infra</span>
-        <span class="link-icon">🔗</span>
+        <span></span>
       </div>
       <div class="tui-row item">
         <span class="circle">○</span>
@@ -1015,7 +1116,7 @@
         <span class="due">in 19d</span>
         <span class="interval">yearly</span>
         <span class="tag-alt">#dev-tools</span>
-        <span class="link-icon">🔗</span>
+        <span></span>
       </div>
       <div class="tui-row item">
         <span class="circle">○</span>
@@ -1023,7 +1124,7 @@
         <span class="due">in 21d</span>
         <span class="interval">monthly</span>
         <span class="tag-alt">#ai</span>
-        <span class="link-icon">🔗</span>
+        <span></span>
       </div>
       <div class="tui-row item">
         <span class="circle">○</span>
@@ -1031,7 +1132,7 @@
         <span class="due">in 25d</span>
         <span class="interval">monthly</span>
         <span class="tag">#hosting</span>
-        <span class="link-icon">🔗</span>
+        <span></span>
       </div>
       <div class="tui-row item">
         <span class="circle">○</span>
@@ -1039,7 +1140,7 @@
         <span class="due">in 28d</span>
         <span class="interval">monthly</span>
         <span class="tag-alt">#work</span>
-        <span class="link-icon">🔗</span>
+        <span></span>
       </div>
       <div class="tui-row item">
         <span class="circle">○</span>
@@ -1047,7 +1148,7 @@
         <span class="due">in 34d</span>
         <span class="interval">monthly</span>
         <span class="tag">#personal</span>
-        <span class="link-icon">🔗</span>
+        <span></span>
       </div>
       <div class="tui-row item">
         <span class="circle">○</span>
@@ -1055,7 +1156,7 @@
         <span class="due">in 41d</span>
         <span class="interval">monthly</span>
         <span class="tag">#personal</span>
-        <span class="link-icon">🔗</span>
+        <span></span>
       </div>
     </div>
 
@@ -1073,14 +1174,16 @@
       <span class="key-hint"><span class="key">q</span> <span data-i18n="tui.hint_quit">quit</span></span>
     </div>
   </div>
-  <div class="annotation-bottom" data-i18n="annot.keys">Keybindings hints</div>
+  <div class="annotations-bottom">
+    <div class="annotation-bottom" data-i18n-html="annot.open">Quick open URL<br>in browser</div>
+    <div class="annotation-bottom" data-i18n="annot.keys">Keybindings hints</div>
+  </div>
   </div>
 
   <!-- Right annotations -->
   <div class="annotations right">
     <div class="annotation" data-i18n-html="annot.total">Total count<br>of reminders</div>
     <div class="annotation" data-i18n-html="annot.interval">Interval &amp; tags<br>w/ color coding</div>
-    <div class="annotation" data-i18n-html="annot.open">Quick open URL<br>in browser</div>
   </div>
 </section>
 
@@ -1153,36 +1256,33 @@
 <section class="features" id="features">
   <div class="section-label" data-i18n="feat.label">Features</div>
   <h2 class="section-title" data-i18n="feat.title">Everything you need, nothing you don't</h2>
-  <div class="features-grid">
-    <div class="feature">
-      <div class="feature-icon">$</div>
-      <h4 data-i18n="feat.f1_h">Zero configuration</h4>
-      <p data-i18n-html="feat.f1_p">Install, run, done. No config files, no cloud signup, no API keys. Your data lives in <code>~/.config/billmind/</code>.</p>
+
+  <div class="features-man">
+    <div class="features-man-head">man billmind</div>
+
+    <div class="feature-row">
+      <div class="feature-key" data-i18n="feat.f1_h">zero-config</div>
+      <div class="feature-desc" data-i18n-html="feat.f1_p">Install, run, done. No config files, no cloud signup, no API keys. Your data lives in <code>~/.config/billmind/</code>.</div>
     </div>
-    <div class="feature">
-      <div class="feature-icon">⟳</div>
-      <h4 data-i18n="feat.f2_h">Flexible intervals</h4>
-      <p data-i18n="feat.f2_p">Weekly, monthly, yearly, custom day counts, or one-time payments. Reminders reset automatically after each cycle.</p>
+    <div class="feature-row">
+      <div class="feature-key" data-i18n="feat.f2_h">flex-intervals</div>
+      <div class="feature-desc" data-i18n="feat.f2_p">Weekly, monthly, yearly, custom day counts, or one-time payments. Reminders reset automatically after each cycle.</div>
     </div>
-    <div class="feature">
-      <div class="feature-icon">◉</div>
-      <h4 data-i18n="feat.f3_h">Background daemon</h4>
-      <p data-i18n="feat.f3_p">Checks payments every hour via launchd / systemd / schtasks. No servers, no dependencies — just your OS scheduler.</p>
+    <div class="feature-row">
+      <div class="feature-key" data-i18n="feat.f3_h">background-daemon</div>
+      <div class="feature-desc" data-i18n="feat.f3_p">Checks payments every hour via launchd / systemd / schtasks. No servers, no dependencies — just your OS scheduler.</div>
     </div>
-    <div class="feature">
-      <div class="feature-icon">↵</div>
-      <h4 data-i18n="feat.f4_h">Vim-style navigation</h4>
-      <p data-i18n="feat.f4_p">j/k to move, gg/G to jump, / to search, dd to delete. Familiar keybindings for anyone who lives in the terminal.</p>
+    <div class="feature-row">
+      <div class="feature-key" data-i18n="feat.f4_h">vim-keys</div>
+      <div class="feature-desc" data-i18n="feat.f4_p">j/k to move, gg/G to jump, / to search, dd to delete. Familiar keybindings for anyone who lives in the terminal.</div>
     </div>
-    <div class="feature">
-      <div class="feature-icon">⎙</div>
-      <h4 data-i18n="feat.f5_h">Push to your phone</h4>
-      <p data-i18n="feat.f5_p">Free push notifications via ntfy.sh — pick any topic name, subscribe in the app, done. No signup, no tracking.</p>
+    <div class="feature-row">
+      <div class="feature-key" data-i18n="feat.f5_h">ntfy-push</div>
+      <div class="feature-desc" data-i18n="feat.f5_p">Free push notifications via ntfy.sh — pick any topic name, subscribe in the app, done. No signup, no tracking.</div>
     </div>
-    <div class="feature">
-      <div class="feature-icon">↶</div>
-      <h4 data-i18n="feat.f6_h">Undo & backups</h4>
-      <p data-i18n-html="feat.f6_p">Press <code>u</code> to undo any action. Automatic backups (last 10) in case something really goes sideways.</p>
+    <div class="feature-row">
+      <div class="feature-key" data-i18n="feat.f6_h">undo-backups</div>
+      <div class="feature-desc" data-i18n-html="feat.f6_p">Press <code>u</code> to undo any action. Automatic backups (last 10) in case something really goes sideways.</div>
     </div>
   </div>
 </section>
@@ -1227,35 +1327,45 @@
 
   <div class="install-pane active" id="brew">
     <div class="install-code">
-      <code><span class="prompt">$</span>brew tap curkan/public
-<span class="prompt">$</span>brew install billmind</code>
-      <button class="copy-btn" data-copy="brew tap curkan/public
-brew install billmind">Copy</button>
+      <div class="term-bar">
+        <span class="term-dots"><i></i><i></i><i></i></span>
+        <span class="term-title">~ — zsh</span>
+        <button class="copy-btn" type="button" data-copy="brew tap curkan/public && brew install billmind">Copy</button>
+      </div>
+      <div class="term-body">
+        <div class="cmd"><span class="prompt">$</span><span class="t-cmd">brew</span> <span class="t-sub">tap</span> <span class="t-arg">curkan/public</span> <span class="t-op">&amp;&amp;</span> <span class="t-cmd">brew</span> <span class="t-sub">install</span> <span class="t-arg">billmind</span></div>
+        <div class="comment" data-i18n="install.note_short">Requires Go 1.24+ · terminal-notifier recommended on macOS</div>
+      </div>
     </div>
   </div>
 
   <div class="install-pane" id="src">
     <div class="install-code">
-      <code><span class="prompt">$</span>git clone https://github.com/curkan/billmind.git
-<span class="prompt">$</span>cd billmind
-<span class="prompt">$</span>go build -o billmind ./cmd/billmind</code>
-      <button class="copy-btn" data-copy="git clone https://github.com/curkan/billmind.git
-cd billmind
-go build -o billmind ./cmd/billmind">Copy</button>
+      <div class="term-bar">
+        <span class="term-dots"><i></i><i></i><i></i></span>
+        <span class="term-title">~ — zsh</span>
+        <button class="copy-btn" type="button" data-copy="git clone https://github.com/curkan/billmind.git && cd billmind && go build -o billmind ./cmd/billmind">Copy</button>
+      </div>
+      <div class="term-body">
+        <div class="cmd"><span class="prompt">$</span><span class="t-cmd">git</span> <span class="t-sub">clone</span> <span class="t-url">https://github.com/curkan/billmind.git</span> <span class="t-op">&amp;&amp;</span> <span class="t-cmd">cd</span> <span class="t-arg">billmind</span> <span class="t-op">&amp;&amp;</span> <span class="t-cmd">go</span> <span class="t-sub">build</span> <span class="t-flag">-o</span> <span class="t-arg">billmind</span> <span class="t-arg">./cmd/billmind</span></div>
+        <div class="comment" data-i18n="install.note_short">Requires Go 1.24+ · terminal-notifier recommended on macOS</div>
+      </div>
     </div>
   </div>
 
   <div class="install-pane" id="bin">
     <div class="install-code">
-      <code data-i18n-html="install.bin_text"><span class="prompt">↓</span>Download pre-built binaries for macOS, Linux & Windows
-from the Releases page on GitHub.</code>
-      <a href="https://github.com/curkan/billmind/releases" target="_blank" class="copy-btn" data-i18n="install.open">Open →</a>
+      <div class="term-bar">
+        <span class="term-dots"><i></i><i></i><i></i></span>
+        <span class="term-title">~ — zsh</span>
+        <a href="https://github.com/curkan/billmind/releases" target="_blank" class="copy-btn" data-i18n="install.open">Open →</a>
+      </div>
+      <div class="term-body">
+        <div class="cmd"><span class="prompt">$</span><span class="t-cmd">curl</span> <span class="t-flag">-L</span> <span class="t-url">https://github.com/curkan/billmind/releases/latest/download/billmind_darwin_arm64.tar.gz</span> <span class="t-op">|</span> <span class="t-cmd">tar</span> <span class="t-flag">-xz</span></div>
+        <div class="comment" data-i18n="install.bin_hint">Binaries for macOS, Linux, Windows — see the Releases page</div>
+      </div>
     </div>
   </div>
-
-  <p class="install-note" data-i18n-html="install.note">
-    Requires Go 1.24+ · <span style="color: var(--lavender)">terminal-notifier</span> recommended on macOS
-  </p>
 </section>
 
 <footer>
@@ -1284,7 +1394,6 @@ from the Releases page on GitHub.</code>
       'hero.desc': "Never forget to pay for your VPS, domain, Netflix, or anything else — right from your terminal. Three notification stages, quiet hours, and push to your phone via ntfy.sh.",
       'hero.btn_start': 'Get Started',
       'hero.btn_github': 'View on GitHub',
-      'annot.tabs': 'Tabs like tmux<br>w/ active session',
       'annot.list': 'List of subscriptions<br>w/ due date',
       'annot.vim': 'Vim-style<br>selection',
       'annot.total': 'Total count<br>of reminders',
@@ -1327,17 +1436,17 @@ from the Releases page on GitHub.</code>
       'notif.remind': 'Remind 3 days before',
       'feat.label': 'Features',
       'feat.title': "Everything you need, nothing you don't",
-      'feat.f1_h': 'Zero configuration',
+      'feat.f1_h': 'zero-config',
       'feat.f1_p': 'Install, run, done. No config files, no cloud signup, no API keys. Your data lives in <code>~/.config/billmind/</code>.',
-      'feat.f2_h': 'Flexible intervals',
+      'feat.f2_h': 'flex-intervals',
       'feat.f2_p': 'Weekly, monthly, yearly, custom day counts, or one-time payments. Reminders reset automatically after each cycle.',
-      'feat.f3_h': 'Background daemon',
+      'feat.f3_h': 'background-daemon',
       'feat.f3_p': 'Checks payments every hour via launchd / systemd / schtasks. No servers, no dependencies — just your OS scheduler.',
-      'feat.f4_h': 'Vim-style navigation',
+      'feat.f4_h': 'vim-keys',
       'feat.f4_p': 'j/k to move, gg/G to jump, / to search, dd to delete. Familiar keybindings for anyone who lives in the terminal.',
-      'feat.f5_h': 'Push to your phone',
+      'feat.f5_h': 'ntfy-push',
       'feat.f5_p': 'Free push notifications via ntfy.sh — pick any topic name, subscribe in the app, done. No signup, no tracking.',
-      'feat.f6_h': 'Undo & backups',
+      'feat.f6_h': 'undo-backups',
       'feat.f6_p': 'Press <code>u</code> to undo any action. Automatic backups (last 10) in case something really goes sideways.',
       'stages.label': 'The Triad',
       'stages.title': 'Three notification stages per cycle',
@@ -1359,9 +1468,9 @@ from the Releases page on GitHub.</code>
       'install.tab_brew': 'Homebrew',
       'install.tab_src': 'From source',
       'install.tab_bin': 'Binary',
-      'install.bin_text': '<span class="prompt">↓</span>Download pre-built binaries for macOS, Linux & Windows\nfrom the Releases page on GitHub.',
       'install.open': 'Open →',
-      'install.note': 'Requires Go 1.24+ · <span style="color: var(--lavender)">terminal-notifier</span> recommended on macOS',
+      'install.note_short': 'Requires Go 1.24+ · terminal-notifier recommended on macOS',
+      'install.bin_hint': 'Binaries for macOS, Linux, Windows — see the Releases page',
       'footer.copyright': '© 2026 billmind · MIT License · made by <a href="https://github.com/curkan" class="author">@curkan</a>',
       'footer.github': 'GitHub',
       'footer.releases': 'Releases',
@@ -1381,7 +1490,6 @@ from the Releases page on GitHub.</code>
       'hero.desc': 'Никогда не забывайте оплатить VPS, домен, Netflix или что угодно ещё — прямо из терминала. Три стадии уведомлений, тихие часы и пуши на телефон через ntfy.sh.',
       'hero.btn_start': 'Начать',
       'hero.btn_github': 'Открыть на GitHub',
-      'annot.tabs': 'Вкладки как в tmux<br>с активной сессией',
       'annot.list': 'Список подписок<br>с датой оплаты',
       'annot.vim': 'Vim-навигация<br>и выделение',
       'annot.total': 'Общее число<br>напоминаний',
@@ -1424,17 +1532,17 @@ from the Releases page on GitHub.</code>
       'notif.remind': 'Напомнить за 3 дня',
       'feat.label': 'Возможности',
       'feat.title': 'Всё, что нужно, и ничего лишнего',
-      'feat.f1_h': 'Нулевая конфигурация',
+      'feat.f1_h': 'zero-config',
       'feat.f1_p': 'Установил, запустил — готово. Никаких конфигов, облачных аккаунтов и API-ключей. Ваши данные — в <code>~/.config/billmind/</code>.',
-      'feat.f2_h': 'Гибкие интервалы',
+      'feat.f2_h': 'flex-intervals',
       'feat.f2_p': 'Еженедельно, ежемесячно, ежегодно, произвольное число дней или разовый платёж. Напоминания перезапускаются автоматически.',
-      'feat.f3_h': 'Фоновый демон',
+      'feat.f3_h': 'background-daemon',
       'feat.f3_p': 'Проверяет платежи каждый час через launchd / systemd / schtasks. Никаких серверов — только планировщик вашей ОС.',
-      'feat.f4_h': 'Vim-навигация',
+      'feat.f4_h': 'vim-keys',
       'feat.f4_p': 'j/k — движение, gg/G — прыжки, / — поиск, dd — удаление. Привычные хоткеи для всех, кто живёт в терминале.',
-      'feat.f5_h': 'Пуши на телефон',
+      'feat.f5_h': 'ntfy-push',
       'feat.f5_p': 'Бесплатные пуши через ntfy.sh — выбираете любое имя топика, подписываетесь в приложении, готово. Без регистрации и трекинга.',
-      'feat.f6_h': 'Undo и бэкапы',
+      'feat.f6_h': 'undo-backups',
       'feat.f6_p': 'Нажмите <code>u</code>, чтобы отменить действие. Автоматические бэкапы (последние 10) — на случай, если всё пошло не так.',
       'stages.label': 'Триада',
       'stages.title': 'Три стадии уведомлений за цикл',
@@ -1456,9 +1564,9 @@ from the Releases page on GitHub.</code>
       'install.tab_brew': 'Homebrew',
       'install.tab_src': 'Из исходников',
       'install.tab_bin': 'Бинарник',
-      'install.bin_text': '<span class="prompt">↓</span>Скачайте готовые бинарники для macOS, Linux и Windows\nсо страницы Releases на GitHub.',
       'install.open': 'Открыть →',
-      'install.note': 'Требуется Go 1.24+ · на macOS рекомендуется <span style="color: var(--lavender)">terminal-notifier</span>',
+      'install.note_short': 'Требуется Go 1.24+ · на macOS рекомендуется terminal-notifier',
+      'install.bin_hint': 'Бинарники для macOS, Linux и Windows — на странице Releases',
       'footer.copyright': '© 2026 billmind · Лицензия MIT · автор — <a href="https://github.com/curkan" class="author">@curkan</a>',
       'footer.github': 'GitHub',
       'footer.releases': 'Релизы',
@@ -1501,6 +1609,134 @@ from the Releases page on GitHub.</code>
     const nav = (navigator.language || 'en').toLowerCase();
     const lang = saved || (nav.startsWith('ru') ? 'ru' : 'en');
     applyLang(lang);
+  })();
+
+  /* Console easter egg */
+  (function() {
+    const lav = 'color:#c4a8f5';
+    const dim = 'color:#8a8a94';
+    const cyan = 'color:#7dd3fc';
+    const orange = 'color:#fbbf24';
+    const green = 'color:#86efac';
+    const badge = 'background:#c4a8f5;color:#1a1a1d;font-weight:700;padding:3px 10px;border-radius:4px;font-family:monospace';
+
+    console.log('%c billmind ', badge);
+    console.log('%cTUI for tracking subscriptions and recurring payments', dim + ';font-style:italic');
+    console.log('%c→ %chttps://github.com/curkan/billmind', dim, lav);
+    console.log('');
+    console.log('%cHey, you found the console. %c⭐ Star the repo if you like it.', green, green + ';font-weight:700');
+    console.log('%cTry: %cbillmind.help()', dim, orange + ';font-weight:700');
+
+    window.billmind = {
+      version: '0.1.0',
+      repo: 'https://github.com/curkan/billmind',
+      help() {
+        console.log('%c— keybinds —', lav + ';font-weight:700');
+        const pad = (s) => (s + '        ').slice(0, 8);
+        const rows = [
+          ['j / k',     'move selection up / down'],
+          ['gg / G',    'jump to top / bottom'],
+          ['/',         'search'],
+          ['f',         'filter'],
+          ['a',         'add reminder'],
+          ['e',         'edit'],
+          ['dd',        'delete'],
+          ['␣ (space)', 'mark as paid'],
+          ['o',         'open URL in browser'],
+          ['u',         'undo last action'],
+          ['s',         'settings'],
+          ['?',         'help inside TUI'],
+          ['q',         'quit'],
+        ];
+        rows.forEach(([k, v]) => console.log('%c  ' + pad(k) + ' %c→ ' + v, orange, dim));
+        return '';
+      },
+      star() {
+        const n = document.getElementById('star-count');
+        console.log('%c⭐ ' + (n && n.textContent ? n.textContent : '?') + ' stars', cyan + ';font-weight:700');
+        return 'https://github.com/curkan/billmind';
+      },
+    };
+  })();
+
+  /* GitHub stars counter (cached 1h) */
+  (function() {
+    const el = document.getElementById('star-count');
+    if (!el) return;
+    const REPO = 'curkan/billmind';
+    const CACHE_KEY = 'billmind-stars';
+    const TTL_MS = 60 * 60 * 1000; // 1 hour
+
+    function fmt(n) {
+      if (n >= 1000) return (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, '') + 'k';
+      return String(n);
+    }
+
+    function render(n) {
+      el.textContent = fmt(n);
+      el.classList.add('loaded');
+    }
+
+    // try cache first
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (cached && (Date.now() - cached.t) < TTL_MS && typeof cached.n === 'number') {
+        render(cached.n);
+      }
+    } catch (_) {}
+
+    // refresh in background
+    fetch('https://api.github.com/repos/' + REPO, { headers: { 'Accept': 'application/vnd.github+json' } })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data || typeof data.stargazers_count !== 'number') return;
+        render(data.stargazers_count);
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ n: data.stargazers_count, t: Date.now() })); } catch (_) {}
+      })
+      .catch(() => {});
+  })();
+
+  /* TUI interactive j/k navigation */
+  (function() {
+    const tui = document.querySelector('.tui');
+    const rows = Array.from(document.querySelectorAll('.tui-table .tui-row.item'));
+    if (!tui || !rows.length) return;
+    let idx = rows.findIndex(r => r.classList.contains('selected'));
+    if (idx < 0) idx = 0;
+
+    let tuiVisible = false;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        tuiVisible = entries[0].isIntersecting;
+      }, { threshold: 0.25 }).observe(tui);
+    } else {
+      tuiVisible = true;
+    }
+
+    function select(n) {
+      rows[idx].classList.remove('selected');
+      rows[idx].querySelector('.circle').textContent = '○';
+      idx = (n + rows.length) % rows.length;
+      rows[idx].classList.add('selected');
+      rows[idx].querySelector('.circle').textContent = '●';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!tuiVisible) return;
+      if (e.key === 'j') { select(idx + 1); }
+      else if (e.key === 'k') { select(idx - 1); }
+      else if (e.key === 'o') {
+        const url = rows[idx].dataset.url;
+        if (url) window.open(url, '_blank', 'noopener,noreferrer');
+      }
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') return; // don't hijack scroll
+    });
+
+    // also allow clicking a row to select it
+    rows.forEach((r, i) => r.addEventListener('click', () => select(i)));
   })();
 
   document.querySelectorAll('.install-tab').forEach(tab => {
