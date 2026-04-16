@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>billmind — TUI for tracking subscriptions and recurring payments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --bg-panel: #17171a;
+    --bg-panel-2: #1e1e22;
+    --border: #2a2a30;
+    --border-soft: #232329;
+    --text: #e8e8ec;
+    --text-dim: #8a8a94;
+    --text-muted: #55555c;
+    --lavender: #c4a8f5;
+    --lavender-2: #b794f6;
+    --lavender-soft: #d6bcfa;
+    --cyan: #7dd3fc;
+    --yellow-bg: #e6c76a;
+    --yellow-text: #1a1a1d;
+    --green: #86efac;
+    --red: #f87171;
+    --pink: #f9a8d4;
+    --orange: #fbbf24;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1200px;
+    height: 800px;
+    background: radial-gradient(ellipse at center, rgba(183, 148, 246, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; }
+
+  /* HEADER */
+  header {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 32px 60px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+  .logo .mind { color: var(--lavender); }
+
+  nav {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+
+  nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+  nav a:hover { color: var(--lavender); }
+
+  .star-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .star-btn:hover { border-color: var(--lavender); color: var(--lavender); }
+  .star-btn svg { width: 14px; height: 14px; }
+
+  /* HERO */
+  .hero {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 60px 60px 40px;
+    text-align: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(183, 148, 246, 0.1);
+    border: 1px solid rgba(183, 148, 246, 0.25);
+    border-radius: 100px;
+    color: var(--lavender-soft);
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px;
+    margin-bottom: 28px;
+  }
+
+  .hero-badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--lavender);
+    box-shadow: 0 0 8px var(--lavender);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero-title {
+    font-size: 72px;
+    font-weight: 300;
+    letter-spacing: -2.5px;
+    line-height: 1.05;
+    margin-bottom: 28px;
+    color: #fff;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-title b {
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, var(--lavender) 60%, var(--lavender-2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin: 0 auto 40px;
+    line-height: 1.65;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--lavender);
+    color: #1a1a1d;
+  }
+  .btn-primary:hover {
+    background: var(--lavender-soft);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(183, 148, 246, 0.3);
+  }
+
+  .btn-secondary {
+    background: var(--bg-panel);
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn-secondary:hover {
+    border-color: var(--lavender);
+    color: var(--lavender);
+  }
+  .btn svg { width: 15px; height: 15px; }
+
+  /* MAIN TUI */
+  .demo {
+    max-width: 1240px;
+    margin: 80px auto 0;
+    padding: 0 40px;
+  }
+
+  /* Annotations wrapper — grid with left column / TUI / right column */
+  .demo-annotated {
+    max-width: 1600px;
+    margin: 80px auto 0;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 180px 1fr 180px;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .demo-annotated .tui-col {
+    min-width: 0;
+  }
+
+  .annotations {
+    display: flex;
+    flex-direction: column;
+    gap: 120px;
+    padding-top: 100px;
+    position: relative;
+  }
+
+  .annotations.left { text-align: right; }
+
+  .annotation {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-muted);
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  .annotations.left .annotation::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -40px;
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .annotations.left .annotation::before {
+    content: '';
+    position: absolute;
+    top: calc(50% - 20px);
+    right: -41px;
+    width: 2px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: 2;
+  }
+
+  .annotations.right .annotation::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -40px;
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .annotations.right .annotation::after {
+    content: '';
+    position: absolute;
+    top: calc(50% - 20px);
+    left: -41px;
+    width: 2px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: 2;
+  }
+
+  /* Bottom annotation under TUI */
+  .annotation-bottom {
+    text-align: center;
+    margin-top: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--text-muted);
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    position: relative;
+    padding-top: 44px;
+  }
+
+  .annotation-bottom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+  }
+
+  .annotation-bottom::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: calc(50% - 20px);
+    width: 40px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .tui {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      0 0 80px rgba(183, 148, 246, 0.08);
+  }
+
+  .tui-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px 0;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .tab {
+    padding: 6px 16px;
+    border-radius: 6px 6px 0 0;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tab.active { background: var(--yellow-bg); color: var(--yellow-text); }
+  .tab.inactive { color: var(--text-dim); background: var(--bg-panel-2); }
+
+  .tui-header {
+    padding: 16px 24px 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .tui-header .name { color: var(--lavender); font-weight: 700; font-size: 14px; }
+  .tui-header .total { color: var(--text-dim); font-size: 13px; }
+
+  .tui-table { padding: 8px 24px 16px; }
+
+  .tui-row {
+    display: grid;
+    grid-template-columns: 24px 1fr 100px 100px 180px 30px;
+    gap: 16px;
+    padding: 4px 0;
+    align-items: center;
+  }
+
+  .tui-row.header {
+    color: var(--cyan);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .tui-row.item {
+    color: var(--text);
+    border-radius: 4px;
+    padding: 4px 6px;
+    margin: 0 -6px;
+  }
+
+  .tui-row.item.selected {
+    background: rgba(183, 148, 246, 0.12);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .tui-row.item .circle { color: var(--text-muted); font-size: 10px; }
+  .tui-row.item.selected .circle { color: var(--lavender); }
+
+  .tui-row .due { color: var(--text); font-weight: 500; }
+  .tui-row.item.selected .due { color: #fff; }
+  .tui-row .interval { color: var(--text-dim); }
+  .tui-row.item.selected .interval { color: var(--lavender-soft); }
+  .tui-row .tag { color: var(--pink); }
+  .tui-row .tag-alt { color: var(--cyan); }
+  .tui-row .link-icon { color: var(--text-muted); font-size: 12px; }
+
+  .tui-footer {
+    padding: 12px 24px;
+    border-top: 1px solid var(--border-soft);
+    background: var(--bg-panel-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .key-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .key { color: var(--lavender); font-weight: 600; }
+
+  /* SIDE PANELS */
+  .side-panels {
+    max-width: 1240px;
+    margin: 32px auto 0;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .side-tui {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .side-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+
+  .side-title { color: var(--lavender); font-weight: 600; font-size: 13px; }
+  .side-step { color: var(--text-dim); font-size: 12px; }
+
+  .field { margin-bottom: 16px; }
+
+  .field-label {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .field-label.active::before {
+    content: '>';
+    color: var(--lavender);
+    margin-right: 4px;
+  }
+
+  .required { color: var(--red); font-size: 11px; }
+
+  .field-input {
+    color: var(--text-dim);
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .field-input::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: var(--text-muted);
+  }
+
+  .field-input.filled { color: var(--text); }
+
+  .term-cursor {
+    display: inline-block;
+    background: var(--lavender);
+    color: var(--bg-panel);
+    animation: term-blink 1s step-end infinite;
+  }
+
+  @keyframes term-blink {
+    0%, 50% {
+      background: var(--lavender);
+      color: var(--bg-panel);
+    }
+    50.01%, 100% {
+      background: transparent;
+      color: var(--text-dim);
+    }
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hint-text {
+    color: var(--lavender);
+    font-size: 11px;
+    padding-left: 14px;
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+
+  .notif-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0 6px 14px;
+    font-size: 13px;
+    position: relative;
+    color: var(--text);
+  }
+
+  .notif-row.active { color: #fff; font-weight: 500; }
+  .notif-row.active::before {
+    content: '>';
+    color: var(--lavender);
+    position: absolute;
+    left: 0;
+    top: 6px;
+  }
+
+  .toggle { color: var(--green); font-size: 12px; }
+  .toggle.off { color: var(--text-muted); }
+
+  .side-keys {
+    margin-top: 20px;
+    padding: 10px 14px;
+    background: var(--bg-panel-2);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* FEATURES */
+  .features {
+    max-width: 1240px;
+    margin: 120px auto 0;
+    padding: 0 60px;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--lavender);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--lavender);
+  }
+
+  .section-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 56px;
+    letter-spacing: -1.5px;
+    max-width: 600px;
+    line-height: 1.1;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .feature {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--lavender), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .feature:hover {
+    border-color: rgba(183, 148, 246, 0.4);
+    transform: translateY(-3px);
+  }
+  .feature:hover::before { opacity: 1; }
+
+  .feature-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(183, 148, 246, 0.1);
+    border: 1px solid rgba(183, 148, 246, 0.25);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--lavender);
+    margin-bottom: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+  }
+
+  .feature h4 {
+    font-size: 16px;
+    color: #fff;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .feature p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+
+  .feature code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg-panel-2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    color: var(--lavender);
+  }
+
+  /* STAGES */
+  .stages {
+    max-width: 1240px;
+    margin: 120px auto 0;
+    padding: 0 60px;
+  }
+
+  .stages-desc {
+    color: var(--text-dim);
+    max-width: 620px;
+    font-size: 16px;
+    margin-top: -32px;
+    margin-bottom: 48px;
+  }
+
+  .stages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .stage {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+  }
+
+  .stage-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .stage-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: -0.3px;
+  }
+
+  .stage.soft .stage-name { color: var(--cyan); }
+  .stage.urgent .stage-name { color: var(--orange); }
+  .stage.critical .stage-name { color: var(--red); }
+
+  .stage-when {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .stage-example {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    background: var(--bg-panel-2);
+    padding: 12px 14px;
+    border-radius: 6px;
+    line-height: 1.5;
+  }
+
+  .stage.soft .stage-example { border-left: 3px solid var(--cyan); }
+  .stage.urgent .stage-example { border-left: 3px solid var(--orange); }
+  .stage.critical .stage-example { border-left: 3px solid var(--red); }
+
+  /* INSTALL */
+  .install {
+    max-width: 1240px;
+    margin: 120px auto 0;
+    padding: 0 60px;
+  }
+
+  .install-tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 32px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .install-tab {
+    padding: 10px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+
+  .install-tab:hover { color: var(--text); }
+
+  .install-tab.active {
+    color: var(--lavender);
+    border-bottom-color: var(--lavender);
+  }
+
+  .install-code {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    max-width: 780px;
+    gap: 16px;
+  }
+
+  .install-code code {
+    color: var(--text);
+    white-space: pre-line;
+    flex: 1;
+  }
+
+  .install-code .prompt { color: var(--lavender); margin-right: 10px; }
+
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .copy-btn:hover {
+    color: var(--lavender);
+    border-color: var(--lavender);
+  }
+
+  .install-pane { display: none; }
+  .install-pane.active { display: block; }
+
+  .install-note {
+    margin-top: 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* FOOTER */
+  footer {
+    max-width: 1240px;
+    margin: 120px auto 0;
+    padding: 40px 60px;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-left: 24px;
+    transition: color 0.15s;
+  }
+
+  footer a:hover { color: var(--lavender); }
+
+  footer .author {
+    color: var(--lavender);
+    margin: 0;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 1100px) {
+    .demo-annotated {
+      grid-template-columns: 1fr;
+      padding: 0 40px;
+    }
+    .annotations { display: none; }
+  }
+
+  @media (max-width: 900px) {
+    .hero-title { font-size: 44px; }
+    header, .hero, .features, .stages, .install, footer {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .demo, .side-panels { padding-left: 16px; padding-right: 16px; }
+    .side-panels, .features-grid, .stages-grid {
+      grid-template-columns: 1fr;
+    }
+    .section-title { font-size: 32px; }
+    .tui-row { grid-template-columns: 20px 1fr 70px; gap: 8px; font-size: 11px; }
+    .tui-row .interval, .tui-row .tag, .tui-row .tag-alt, .tui-row .link-icon, .tui-row.header span:nth-child(n+4) { display: none; }
+    .tui-footer { gap: 10px; font-size: 10px; }
+    nav { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo">bill<span class="mind">mind</span></div>
+  <nav>
+    <a href="#features">Features</a>
+    <a href="#stages">Notifications</a>
+    <a href="#install">Install</a>
+    <a href="https://github.com/curkan/billmind" target="_blank">Docs</a>
+    <a href="https://github.com/curkan/billmind" class="star-btn" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
+      Star
+    </a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    v0.1.0 — NEW RELEASE
+  </div>
+  <h1 class="hero-title">TUI for tracking <b>subscriptions</b> and <b>recurring payments</b></h1>
+  <p class="hero-desc">
+    Never forget to pay for your VPS, domain, Netflix, or anything else — right from your terminal.
+    Three notification stages, quiet hours, and push to your phone via ntfy.sh.
+  </p>
+  <div class="hero-buttons">
+    <a href="#install" class="btn btn-primary">Get Started</a>
+    <a href="https://github.com/curkan/billmind" class="btn btn-secondary" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      View on GitHub
+    </a>
+  </div>
+</section>
+
+<section class="demo-annotated">
+  <!-- Left annotations -->
+  <div class="annotations left">
+    <div class="annotation">Tabs like tmux<br>w/ active session</div>
+    <div class="annotation">List of subscriptions<br>w/ due date</div>
+    <div class="annotation">Vim-style<br>selection</div>
+  </div>
+
+  <!-- TUI -->
+  <div class="tui-col">
+  <div class="tui">
+    <div class="tui-tabs">
+      <div class="tab active">billmind</div>
+      <div class="tab inactive">4:billmind</div>
+    </div>
+
+    <div class="tui-header">
+      <span class="name">billmind</span>
+      <span class="total">Total: 10</span>
+    </div>
+
+    <div class="tui-table">
+      <div class="tui-row header">
+        <span></span>
+        <span>Name</span>
+        <span>Due</span>
+        <span>Interval</span>
+        <span>Tags</span>
+        <span></span>
+      </div>
+      <div class="tui-row item selected">
+        <span class="circle">●</span>
+        <span>goga.zone</span>
+        <span class="due">in 3d</span>
+        <span class="interval">yearly</span>
+        <span class="tag">#domain</span>
+        <span class="link-icon">🔗</span>
+      </div>
+      <div class="tui-row item">
+        <span class="circle">○</span>
+        <span>GitHub Copilot</span>
+        <span class="due">in 8d</span>
+        <span class="interval">monthly</span>
+        <span class="tag-alt">#dev-tools</span>
+        <span class="link-icon">🔗</span>
+      </div>
+      <div class="tui-row item">
+        <span class="circle">○</span>
+        <span>Hetzner CX22</span>
+        <span class="due">in 12d</span>
+        <span class="interval">monthly</span>
+        <span class="tag">#vps</span>
+        <span class="link-icon">🔗</span>
+      </div>
+      <div class="tui-row item">
+        <span class="circle">○</span>
+        <span>Cloudflare Pro</span>
+        <span class="due">in 14d</span>
+        <span class="interval">monthly</span>
+        <span class="tag">#infra</span>
+        <span class="link-icon">🔗</span>
+      </div>
+      <div class="tui-row item">
+        <span class="circle">○</span>
+        <span>JetBrains All Pack</span>
+        <span class="due">in 19d</span>
+        <span class="interval">yearly</span>
+        <span class="tag-alt">#dev-tools</span>
+        <span class="link-icon">🔗</span>
+      </div>
+      <div class="tui-row item">
+        <span class="circle">○</span>
+        <span>Claude Pro</span>
+        <span class="due">in 21d</span>
+        <span class="interval">monthly</span>
+        <span class="tag-alt">#ai</span>
+        <span class="link-icon">🔗</span>
+      </div>
+      <div class="tui-row item">
+        <span class="circle">○</span>
+        <span>Vercel Pro</span>
+        <span class="due">in 25d</span>
+        <span class="interval">monthly</span>
+        <span class="tag">#hosting</span>
+        <span class="link-icon">🔗</span>
+      </div>
+      <div class="tui-row item">
+        <span class="circle">○</span>
+        <span>Linear</span>
+        <span class="due">in 28d</span>
+        <span class="interval">monthly</span>
+        <span class="tag-alt">#work</span>
+        <span class="link-icon">🔗</span>
+      </div>
+      <div class="tui-row item">
+        <span class="circle">○</span>
+        <span>Spotify Family</span>
+        <span class="due">in 34d</span>
+        <span class="interval">monthly</span>
+        <span class="tag">#personal</span>
+        <span class="link-icon">🔗</span>
+      </div>
+      <div class="tui-row item">
+        <span class="circle">○</span>
+        <span>Netflix</span>
+        <span class="due">in 41d</span>
+        <span class="interval">monthly</span>
+        <span class="tag">#personal</span>
+        <span class="link-icon">🔗</span>
+      </div>
+    </div>
+
+    <div class="tui-footer">
+      <span class="key-hint"><span class="key">a</span> add</span>
+      <span class="key-hint"><span class="key">e</span> edit</span>
+      <span class="key-hint"><span class="key">dd</span> delete</span>
+      <span class="key-hint"><span class="key">␣</span> pay</span>
+      <span class="key-hint"><span class="key">o</span> open</span>
+      <span class="key-hint"><span class="key">/</span> search</span>
+      <span class="key-hint"><span class="key">f</span> filter</span>
+      <span class="key-hint"><span class="key">u</span> undo</span>
+      <span class="key-hint"><span class="key">s</span> settings</span>
+      <span class="key-hint"><span class="key">?</span> help</span>
+      <span class="key-hint"><span class="key">q</span> quit</span>
+    </div>
+  </div>
+  <div class="annotation-bottom">Keybindings hints</div>
+  </div>
+
+  <!-- Right annotations -->
+  <div class="annotations right">
+    <div class="annotation">Total count<br>of reminders</div>
+    <div class="annotation">Interval &amp; tags<br>w/ color coding</div>
+    <div class="annotation">Quick open URL<br>in browser</div>
+  </div>
+</section>
+
+<section class="side-panels">
+  <div class="side-tui">
+    <div class="side-header">
+      <span class="side-title">New reminder</span>
+      <span class="side-step">1/4 Info</span>
+    </div>
+
+    <div class="field">
+      <div class="field-label active">Name <span class="required">*</span></div>
+      <div class="field-input"><span class="term-cursor">N</span>etflix, Spotify, VPN…</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">URL</div>
+      <div class="field-input filled">https://example.com/pay</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Tags</div>
+      <div class="field-input filled">streaming, monthly</div>
+      <div class="hint-text">comma-separated</div>
+    </div>
+
+    <div class="side-keys">
+      <span class="key-hint"><span class="key">tab</span> / <span class="key">C-j</span> next</span>
+      <span class="key-hint"><span class="key">S-tab</span> / <span class="key">C-k</span> back</span>
+      <span class="key-hint"><span class="key">esc</span> cancel</span>
+    </div>
+  </div>
+
+  <div class="side-tui">
+    <div class="side-header">
+      <span class="side-title">Notifications</span>
+      <span class="side-step">3/4 Notifications</span>
+    </div>
+
+    <div class="notif-row">
+      <span>macOS notification</span>
+      <span class="toggle">[on]</span>
+    </div>
+    <div class="notif-row active">
+      <span>ntfy notification</span>
+      <span class="toggle">[on]</span>
+    </div>
+    <div class="notif-row">
+      <span>Quiet hours (22:00–08:00)</span>
+      <span class="toggle">[on]</span>
+    </div>
+    <div class="notif-row">
+      <span>Sound on notification</span>
+      <span class="toggle off">[off]</span>
+    </div>
+    <div class="notif-row">
+      <span>Remind 3 days before</span>
+      <span class="toggle">[on]</span>
+    </div>
+
+    <div class="side-keys">
+      <span class="key-hint"><span class="key">tab</span> / <span class="key">C-j</span> next</span>
+      <span class="key-hint"><span class="key">S-tab</span> / <span class="key">C-k</span> back</span>
+      <span class="key-hint"><span class="key">h</span>/<span class="key">l</span> ←/→</span>
+      <span class="key-hint"><span class="key">esc</span> cancel</span>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="section-label">Features</div>
+  <h2 class="section-title">Everything you need, nothing you don't</h2>
+  <div class="features-grid">
+    <div class="feature">
+      <div class="feature-icon">$</div>
+      <h4>Zero configuration</h4>
+      <p>Install, run, done. No config files, no cloud signup, no API keys. Your data lives in <code>~/.config/billmind/</code>.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⟳</div>
+      <h4>Flexible intervals</h4>
+      <p>Weekly, monthly, yearly, custom day counts, or one-time payments. Reminders reset automatically after each cycle.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">◉</div>
+      <h4>Background daemon</h4>
+      <p>Checks payments every hour via launchd / systemd / schtasks. No servers, no dependencies — just your OS scheduler.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">↵</div>
+      <h4>Vim-style navigation</h4>
+      <p>j/k to move, gg/G to jump, / to search, dd to delete. Familiar keybindings for anyone who lives in the terminal.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⎙</div>
+      <h4>Push to your phone</h4>
+      <p>Free push notifications via ntfy.sh — pick any topic name, subscribe in the app, done. No signup, no tracking.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">↶</div>
+      <h4>Undo & backups</h4>
+      <p>Press <code>u</code> to undo any action. Automatic backups (last 10) in case something really goes sideways.</p>
+    </div>
+  </div>
+</section>
+
+<section class="stages" id="stages">
+  <div class="section-label">The Triad</div>
+  <h2 class="section-title">Three notification stages per cycle</h2>
+  <p class="stages-desc">
+    Each reminder fires exactly three times — never more, never less. Quiet hours respected. Missed notifications catch up intelligently.
+  </p>
+  <div class="stages-grid">
+    <div class="stage soft">
+      <div class="stage-num">01 — SOFT</div>
+      <div class="stage-name">Gentle nudge</div>
+      <div class="stage-when">N days before due date</div>
+      <div class="stage-example">Hetzner VPS — payment<br>in 3 day(s) (May 01)</div>
+    </div>
+    <div class="stage urgent">
+      <div class="stage-num">02 — URGENT</div>
+      <div class="stage-name">Pay today</div>
+      <div class="stage-when">On due date</div>
+      <div class="stage-example">Hetzner VPS —<br>payment today!</div>
+    </div>
+    <div class="stage critical">
+      <div class="stage-num">03 — CRITICAL</div>
+      <div class="stage-name">Overdue</div>
+      <div class="stage-when">After due date</div>
+      <div class="stage-example">Hetzner VPS —<br>overdue by 2 day(s)</div>
+    </div>
+  </div>
+</section>
+
+<section class="install" id="install">
+  <div class="section-label">Install</div>
+  <h2 class="section-title">Get up and running in seconds</h2>
+
+  <div class="install-tabs">
+    <button class="install-tab active" data-target="brew">Homebrew</button>
+    <button class="install-tab" data-target="src">From source</button>
+    <button class="install-tab" data-target="bin">Binary</button>
+  </div>
+
+  <div class="install-pane active" id="brew">
+    <div class="install-code">
+      <code><span class="prompt">$</span>brew tap curkan/public
+<span class="prompt">$</span>brew install billmind</code>
+      <button class="copy-btn" data-copy="brew tap curkan/public
+brew install billmind">Copy</button>
+    </div>
+  </div>
+
+  <div class="install-pane" id="src">
+    <div class="install-code">
+      <code><span class="prompt">$</span>git clone https://github.com/curkan/billmind.git
+<span class="prompt">$</span>cd billmind
+<span class="prompt">$</span>go build -o billmind ./cmd/billmind</code>
+      <button class="copy-btn" data-copy="git clone https://github.com/curkan/billmind.git
+cd billmind
+go build -o billmind ./cmd/billmind">Copy</button>
+    </div>
+  </div>
+
+  <div class="install-pane" id="bin">
+    <div class="install-code">
+      <code><span class="prompt">↓</span>Download pre-built binaries for macOS, Linux & Windows
+from the Releases page on GitHub.</code>
+      <a href="https://github.com/curkan/billmind/releases" target="_blank" class="copy-btn">Open →</a>
+    </div>
+  </div>
+
+  <p class="install-note">
+    Requires Go 1.24+ · <span style="color: var(--lavender)">terminal-notifier</span> recommended on macOS
+  </p>
+</section>
+
+<footer>
+  <div>© 2026 billmind · MIT License · made by <a href="https://github.com/curkan" class="author">@curkan</a></div>
+  <div>
+    <a href="https://github.com/curkan/billmind" target="_blank">GitHub</a>
+    <a href="https://github.com/curkan/billmind/releases" target="_blank">Releases</a>
+    <a href="https://github.com/curkan/billmind/issues" target="_blank">Issues</a>
+  </div>
+</footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.install-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.install-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.install-pane').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.target).classList.add('active');
+    });
+  });
+
+  document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(btn.dataset.copy).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied ✓';
+        btn.style.color = 'var(--green)';
+        btn.style.borderColor = 'var(--green)';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 1500);
+      });
+    });
+  });
+</script>
+</body>
+</html>
