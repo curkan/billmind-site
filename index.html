@@ -107,6 +107,35 @@
   .star-btn:hover { border-color: var(--lavender); color: var(--lavender); }
   .star-btn svg { width: 14px; height: 14px; }
 
+  /* LANGUAGE SWITCHER */
+  .lang-switch {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .lang-switch button {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+  }
+  .lang-switch button:hover { color: var(--text); }
+  .lang-switch button.active {
+    background: var(--lavender);
+    color: var(--yellow-text);
+  }
+
   /* HERO */
   .hero {
     max-width: 1240px;
@@ -884,32 +913,36 @@
 <header>
   <div class="logo">bill<span class="mind">mind</span></div>
   <nav>
-    <a href="#features">Features</a>
-    <a href="#stages">Notifications</a>
-    <a href="#install">Install</a>
-    <a href="https://github.com/curkan/billmind" target="_blank">Docs</a>
+    <a href="#features" data-i18n="nav.features">Features</a>
+    <a href="#stages" data-i18n="nav.notifications">Notifications</a>
+    <a href="#install" data-i18n="nav.install">Install</a>
+    <a href="https://github.com/curkan/billmind" target="_blank" data-i18n="nav.docs">Docs</a>
     <a href="https://github.com/curkan/billmind" class="star-btn" target="_blank">
       <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
-      Star
+      <span data-i18n="nav.star">Star</span>
     </a>
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" data-lang="en" class="active">EN</button>
+      <button type="button" data-lang="ru">RU</button>
+    </div>
   </nav>
 </header>
 
 <section class="hero">
   <div class="hero-badge">
     <span class="dot"></span>
-    v0.1.0 — NEW RELEASE
+    <span data-i18n="hero.badge">v0.1.0 — NEW RELEASE</span>
   </div>
-  <h1 class="hero-title">TUI for tracking <b>subscriptions</b> and <b>recurring payments</b></h1>
-  <p class="hero-desc">
+  <h1 class="hero-title" data-i18n-html="hero.title">TUI for tracking <b>subscriptions</b> and <b>recurring payments</b></h1>
+  <p class="hero-desc" data-i18n="hero.desc">
     Never forget to pay for your VPS, domain, Netflix, or anything else — right from your terminal.
     Three notification stages, quiet hours, and push to your phone via ntfy.sh.
   </p>
   <div class="hero-buttons">
-    <a href="#install" class="btn btn-primary">Get Started</a>
+    <a href="#install" class="btn btn-primary" data-i18n="hero.btn_start">Get Started</a>
     <a href="https://github.com/curkan/billmind" class="btn btn-secondary" target="_blank">
       <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-      View on GitHub
+      <span data-i18n="hero.btn_github">View on GitHub</span>
     </a>
   </div>
 </section>
@@ -917,9 +950,9 @@
 <section class="demo-annotated">
   <!-- Left annotations -->
   <div class="annotations left">
-    <div class="annotation">Tabs like tmux<br>w/ active session</div>
-    <div class="annotation">List of subscriptions<br>w/ due date</div>
-    <div class="annotation">Vim-style<br>selection</div>
+    <div class="annotation" data-i18n-html="annot.tabs">Tabs like tmux<br>w/ active session</div>
+    <div class="annotation" data-i18n-html="annot.list">List of subscriptions<br>w/ due date</div>
+    <div class="annotation" data-i18n-html="annot.vim">Vim-style<br>selection</div>
   </div>
 
   <!-- TUI -->
@@ -932,16 +965,16 @@
 
     <div class="tui-header">
       <span class="name">billmind</span>
-      <span class="total">Total: 10</span>
+      <span class="total" data-i18n="tui.total">Total: 10</span>
     </div>
 
     <div class="tui-table">
       <div class="tui-row header">
         <span></span>
-        <span>Name</span>
-        <span>Due</span>
-        <span>Interval</span>
-        <span>Tags</span>
+        <span data-i18n="tui.h_name">Name</span>
+        <span data-i18n="tui.h_due">Due</span>
+        <span data-i18n="tui.h_interval">Interval</span>
+        <span data-i18n="tui.h_tags">Tags</span>
         <span></span>
       </div>
       <div class="tui-row item selected">
@@ -1027,169 +1060,169 @@
     </div>
 
     <div class="tui-footer">
-      <span class="key-hint"><span class="key">a</span> add</span>
-      <span class="key-hint"><span class="key">e</span> edit</span>
-      <span class="key-hint"><span class="key">dd</span> delete</span>
-      <span class="key-hint"><span class="key">␣</span> pay</span>
-      <span class="key-hint"><span class="key">o</span> open</span>
-      <span class="key-hint"><span class="key">/</span> search</span>
-      <span class="key-hint"><span class="key">f</span> filter</span>
-      <span class="key-hint"><span class="key">u</span> undo</span>
-      <span class="key-hint"><span class="key">s</span> settings</span>
-      <span class="key-hint"><span class="key">?</span> help</span>
-      <span class="key-hint"><span class="key">q</span> quit</span>
+      <span class="key-hint"><span class="key">a</span> <span data-i18n="tui.hint_add">add</span></span>
+      <span class="key-hint"><span class="key">e</span> <span data-i18n="tui.hint_edit">edit</span></span>
+      <span class="key-hint"><span class="key">dd</span> <span data-i18n="tui.hint_delete">delete</span></span>
+      <span class="key-hint"><span class="key">␣</span> <span data-i18n="tui.hint_pay">pay</span></span>
+      <span class="key-hint"><span class="key">o</span> <span data-i18n="tui.hint_open">open</span></span>
+      <span class="key-hint"><span class="key">/</span> <span data-i18n="tui.hint_search">search</span></span>
+      <span class="key-hint"><span class="key">f</span> <span data-i18n="tui.hint_filter">filter</span></span>
+      <span class="key-hint"><span class="key">u</span> <span data-i18n="tui.hint_undo">undo</span></span>
+      <span class="key-hint"><span class="key">s</span> <span data-i18n="tui.hint_settings">settings</span></span>
+      <span class="key-hint"><span class="key">?</span> <span data-i18n="tui.hint_help">help</span></span>
+      <span class="key-hint"><span class="key">q</span> <span data-i18n="tui.hint_quit">quit</span></span>
     </div>
   </div>
-  <div class="annotation-bottom">Keybindings hints</div>
+  <div class="annotation-bottom" data-i18n="annot.keys">Keybindings hints</div>
   </div>
 
   <!-- Right annotations -->
   <div class="annotations right">
-    <div class="annotation">Total count<br>of reminders</div>
-    <div class="annotation">Interval &amp; tags<br>w/ color coding</div>
-    <div class="annotation">Quick open URL<br>in browser</div>
+    <div class="annotation" data-i18n-html="annot.total">Total count<br>of reminders</div>
+    <div class="annotation" data-i18n-html="annot.interval">Interval &amp; tags<br>w/ color coding</div>
+    <div class="annotation" data-i18n-html="annot.open">Quick open URL<br>in browser</div>
   </div>
 </section>
 
 <section class="side-panels">
   <div class="side-tui">
     <div class="side-header">
-      <span class="side-title">New reminder</span>
-      <span class="side-step">1/4 Info</span>
+      <span class="side-title" data-i18n="form.title">New reminder</span>
+      <span class="side-step" data-i18n="form.step">1/4 Info</span>
     </div>
 
     <div class="field">
-      <div class="field-label active">Name <span class="required">*</span></div>
-      <div class="field-input"><span class="term-cursor">N</span>etflix, Spotify, VPN…</div>
+      <div class="field-label active"><span data-i18n="form.name">Name</span> <span class="required">*</span></div>
+      <div class="field-input" data-i18n-html="form.name_ph"><span class="term-cursor">N</span>etflix, Spotify, VPN…</div>
     </div>
 
     <div class="field">
-      <div class="field-label">URL</div>
+      <div class="field-label" data-i18n="form.url">URL</div>
       <div class="field-input filled">https://example.com/pay</div>
     </div>
 
     <div class="field">
-      <div class="field-label">Tags</div>
-      <div class="field-input filled">streaming, monthly</div>
-      <div class="hint-text">comma-separated</div>
+      <div class="field-label" data-i18n="form.tags">Tags</div>
+      <div class="field-input filled" data-i18n="form.tags_val">streaming, monthly</div>
+      <div class="hint-text" data-i18n="form.comma">comma-separated</div>
     </div>
 
     <div class="side-keys">
-      <span class="key-hint"><span class="key">tab</span> / <span class="key">C-j</span> next</span>
-      <span class="key-hint"><span class="key">S-tab</span> / <span class="key">C-k</span> back</span>
-      <span class="key-hint"><span class="key">esc</span> cancel</span>
+      <span class="key-hint"><span class="key">tab</span> / <span class="key">C-j</span> <span data-i18n="form.next">next</span></span>
+      <span class="key-hint"><span class="key">S-tab</span> / <span class="key">C-k</span> <span data-i18n="form.back">back</span></span>
+      <span class="key-hint"><span class="key">esc</span> <span data-i18n="form.cancel">cancel</span></span>
     </div>
   </div>
 
   <div class="side-tui">
     <div class="side-header">
-      <span class="side-title">Notifications</span>
-      <span class="side-step">3/4 Notifications</span>
+      <span class="side-title" data-i18n="notif.title">Notifications</span>
+      <span class="side-step" data-i18n="notif.step">3/4 Notifications</span>
     </div>
 
     <div class="notif-row">
-      <span>macOS notification</span>
+      <span data-i18n="notif.macos">macOS notification</span>
       <span class="toggle">[on]</span>
     </div>
     <div class="notif-row active">
-      <span>ntfy notification</span>
+      <span data-i18n="notif.ntfy">ntfy notification</span>
       <span class="toggle">[on]</span>
     </div>
     <div class="notif-row">
-      <span>Quiet hours (22:00–08:00)</span>
+      <span data-i18n="notif.quiet">Quiet hours (22:00–08:00)</span>
       <span class="toggle">[on]</span>
     </div>
     <div class="notif-row">
-      <span>Sound on notification</span>
+      <span data-i18n="notif.sound">Sound on notification</span>
       <span class="toggle off">[off]</span>
     </div>
     <div class="notif-row">
-      <span>Remind 3 days before</span>
+      <span data-i18n="notif.remind">Remind 3 days before</span>
       <span class="toggle">[on]</span>
     </div>
 
     <div class="side-keys">
-      <span class="key-hint"><span class="key">tab</span> / <span class="key">C-j</span> next</span>
-      <span class="key-hint"><span class="key">S-tab</span> / <span class="key">C-k</span> back</span>
+      <span class="key-hint"><span class="key">tab</span> / <span class="key">C-j</span> <span data-i18n="form.next">next</span></span>
+      <span class="key-hint"><span class="key">S-tab</span> / <span class="key">C-k</span> <span data-i18n="form.back">back</span></span>
       <span class="key-hint"><span class="key">h</span>/<span class="key">l</span> ←/→</span>
-      <span class="key-hint"><span class="key">esc</span> cancel</span>
+      <span class="key-hint"><span class="key">esc</span> <span data-i18n="form.cancel">cancel</span></span>
     </div>
   </div>
 </section>
 
 <section class="features" id="features">
-  <div class="section-label">Features</div>
-  <h2 class="section-title">Everything you need, nothing you don't</h2>
+  <div class="section-label" data-i18n="feat.label">Features</div>
+  <h2 class="section-title" data-i18n="feat.title">Everything you need, nothing you don't</h2>
   <div class="features-grid">
     <div class="feature">
       <div class="feature-icon">$</div>
-      <h4>Zero configuration</h4>
-      <p>Install, run, done. No config files, no cloud signup, no API keys. Your data lives in <code>~/.config/billmind/</code>.</p>
+      <h4 data-i18n="feat.f1_h">Zero configuration</h4>
+      <p data-i18n-html="feat.f1_p">Install, run, done. No config files, no cloud signup, no API keys. Your data lives in <code>~/.config/billmind/</code>.</p>
     </div>
     <div class="feature">
       <div class="feature-icon">⟳</div>
-      <h4>Flexible intervals</h4>
-      <p>Weekly, monthly, yearly, custom day counts, or one-time payments. Reminders reset automatically after each cycle.</p>
+      <h4 data-i18n="feat.f2_h">Flexible intervals</h4>
+      <p data-i18n="feat.f2_p">Weekly, monthly, yearly, custom day counts, or one-time payments. Reminders reset automatically after each cycle.</p>
     </div>
     <div class="feature">
       <div class="feature-icon">◉</div>
-      <h4>Background daemon</h4>
-      <p>Checks payments every hour via launchd / systemd / schtasks. No servers, no dependencies — just your OS scheduler.</p>
+      <h4 data-i18n="feat.f3_h">Background daemon</h4>
+      <p data-i18n="feat.f3_p">Checks payments every hour via launchd / systemd / schtasks. No servers, no dependencies — just your OS scheduler.</p>
     </div>
     <div class="feature">
       <div class="feature-icon">↵</div>
-      <h4>Vim-style navigation</h4>
-      <p>j/k to move, gg/G to jump, / to search, dd to delete. Familiar keybindings for anyone who lives in the terminal.</p>
+      <h4 data-i18n="feat.f4_h">Vim-style navigation</h4>
+      <p data-i18n="feat.f4_p">j/k to move, gg/G to jump, / to search, dd to delete. Familiar keybindings for anyone who lives in the terminal.</p>
     </div>
     <div class="feature">
       <div class="feature-icon">⎙</div>
-      <h4>Push to your phone</h4>
-      <p>Free push notifications via ntfy.sh — pick any topic name, subscribe in the app, done. No signup, no tracking.</p>
+      <h4 data-i18n="feat.f5_h">Push to your phone</h4>
+      <p data-i18n="feat.f5_p">Free push notifications via ntfy.sh — pick any topic name, subscribe in the app, done. No signup, no tracking.</p>
     </div>
     <div class="feature">
       <div class="feature-icon">↶</div>
-      <h4>Undo & backups</h4>
-      <p>Press <code>u</code> to undo any action. Automatic backups (last 10) in case something really goes sideways.</p>
+      <h4 data-i18n="feat.f6_h">Undo & backups</h4>
+      <p data-i18n-html="feat.f6_p">Press <code>u</code> to undo any action. Automatic backups (last 10) in case something really goes sideways.</p>
     </div>
   </div>
 </section>
 
 <section class="stages" id="stages">
-  <div class="section-label">The Triad</div>
-  <h2 class="section-title">Three notification stages per cycle</h2>
-  <p class="stages-desc">
+  <div class="section-label" data-i18n="stages.label">The Triad</div>
+  <h2 class="section-title" data-i18n="stages.title">Three notification stages per cycle</h2>
+  <p class="stages-desc" data-i18n="stages.desc">
     Each reminder fires exactly three times — never more, never less. Quiet hours respected. Missed notifications catch up intelligently.
   </p>
   <div class="stages-grid">
     <div class="stage soft">
-      <div class="stage-num">01 — SOFT</div>
-      <div class="stage-name">Gentle nudge</div>
-      <div class="stage-when">N days before due date</div>
-      <div class="stage-example">Hetzner VPS — payment<br>in 3 day(s) (May 01)</div>
+      <div class="stage-num" data-i18n="stages.s1_num">01 — SOFT</div>
+      <div class="stage-name" data-i18n="stages.s1_name">Gentle nudge</div>
+      <div class="stage-when" data-i18n="stages.s1_when">N days before due date</div>
+      <div class="stage-example" data-i18n-html="stages.s1_ex">Hetzner VPS — payment<br>in 3 day(s) (May 01)</div>
     </div>
     <div class="stage urgent">
-      <div class="stage-num">02 — URGENT</div>
-      <div class="stage-name">Pay today</div>
-      <div class="stage-when">On due date</div>
-      <div class="stage-example">Hetzner VPS —<br>payment today!</div>
+      <div class="stage-num" data-i18n="stages.s2_num">02 — URGENT</div>
+      <div class="stage-name" data-i18n="stages.s2_name">Pay today</div>
+      <div class="stage-when" data-i18n="stages.s2_when">On due date</div>
+      <div class="stage-example" data-i18n-html="stages.s2_ex">Hetzner VPS —<br>payment today!</div>
     </div>
     <div class="stage critical">
-      <div class="stage-num">03 — CRITICAL</div>
-      <div class="stage-name">Overdue</div>
-      <div class="stage-when">After due date</div>
-      <div class="stage-example">Hetzner VPS —<br>overdue by 2 day(s)</div>
+      <div class="stage-num" data-i18n="stages.s3_num">03 — CRITICAL</div>
+      <div class="stage-name" data-i18n="stages.s3_name">Overdue</div>
+      <div class="stage-when" data-i18n="stages.s3_when">After due date</div>
+      <div class="stage-example" data-i18n-html="stages.s3_ex">Hetzner VPS —<br>overdue by 2 day(s)</div>
     </div>
   </div>
 </section>
 
 <section class="install" id="install">
-  <div class="section-label">Install</div>
-  <h2 class="section-title">Get up and running in seconds</h2>
+  <div class="section-label" data-i18n="install.label">Install</div>
+  <h2 class="section-title" data-i18n="install.title">Get up and running in seconds</h2>
 
   <div class="install-tabs">
-    <button class="install-tab active" data-target="brew">Homebrew</button>
-    <button class="install-tab" data-target="src">From source</button>
-    <button class="install-tab" data-target="bin">Binary</button>
+    <button class="install-tab active" data-target="brew" data-i18n="install.tab_brew">Homebrew</button>
+    <button class="install-tab" data-target="src" data-i18n="install.tab_src">From source</button>
+    <button class="install-tab" data-target="bin" data-i18n="install.tab_bin">Binary</button>
   </div>
 
   <div class="install-pane active" id="brew">
@@ -1214,29 +1247,262 @@ go build -o billmind ./cmd/billmind">Copy</button>
 
   <div class="install-pane" id="bin">
     <div class="install-code">
-      <code><span class="prompt">↓</span>Download pre-built binaries for macOS, Linux & Windows
+      <code data-i18n-html="install.bin_text"><span class="prompt">↓</span>Download pre-built binaries for macOS, Linux & Windows
 from the Releases page on GitHub.</code>
-      <a href="https://github.com/curkan/billmind/releases" target="_blank" class="copy-btn">Open →</a>
+      <a href="https://github.com/curkan/billmind/releases" target="_blank" class="copy-btn" data-i18n="install.open">Open →</a>
     </div>
   </div>
 
-  <p class="install-note">
+  <p class="install-note" data-i18n-html="install.note">
     Requires Go 1.24+ · <span style="color: var(--lavender)">terminal-notifier</span> recommended on macOS
   </p>
 </section>
 
 <footer>
-  <div>© 2026 billmind · MIT License · made by <a href="https://github.com/curkan" class="author">@curkan</a></div>
+  <div data-i18n-html="footer.copyright">© 2026 billmind · MIT License · made by <a href="https://github.com/curkan" class="author">@curkan</a></div>
   <div>
-    <a href="https://github.com/curkan/billmind" target="_blank">GitHub</a>
-    <a href="https://github.com/curkan/billmind/releases" target="_blank">Releases</a>
-    <a href="https://github.com/curkan/billmind/issues" target="_blank">Issues</a>
+    <a href="https://github.com/curkan/billmind" target="_blank" data-i18n="footer.github">GitHub</a>
+    <a href="https://github.com/curkan/billmind/releases" target="_blank" data-i18n="footer.releases">Releases</a>
+    <a href="https://github.com/curkan/billmind/issues" target="_blank" data-i18n="footer.issues">Issues</a>
   </div>
 </footer>
 
 </div>
 
 <script>
+  /* i18n */
+  const I18N = {
+    en: {
+      'page.title': 'billmind — TUI for tracking subscriptions and recurring payments',
+      'nav.features': 'Features',
+      'nav.notifications': 'Notifications',
+      'nav.install': 'Install',
+      'nav.docs': 'Docs',
+      'nav.star': 'Star',
+      'hero.badge': 'v0.1.0 — NEW RELEASE',
+      'hero.title': 'TUI for tracking <b>subscriptions</b> and <b>recurring payments</b>',
+      'hero.desc': "Never forget to pay for your VPS, domain, Netflix, or anything else — right from your terminal. Three notification stages, quiet hours, and push to your phone via ntfy.sh.",
+      'hero.btn_start': 'Get Started',
+      'hero.btn_github': 'View on GitHub',
+      'annot.tabs': 'Tabs like tmux<br>w/ active session',
+      'annot.list': 'List of subscriptions<br>w/ due date',
+      'annot.vim': 'Vim-style<br>selection',
+      'annot.total': 'Total count<br>of reminders',
+      'annot.interval': 'Interval &amp; tags<br>w/ color coding',
+      'annot.open': 'Quick open URL<br>in browser',
+      'annot.keys': 'Keybindings hints',
+      'tui.total': 'Total: 10',
+      'tui.h_name': 'Name',
+      'tui.h_due': 'Due',
+      'tui.h_interval': 'Interval',
+      'tui.h_tags': 'Tags',
+      'tui.hint_add': 'add',
+      'tui.hint_edit': 'edit',
+      'tui.hint_delete': 'delete',
+      'tui.hint_pay': 'pay',
+      'tui.hint_open': 'open',
+      'tui.hint_search': 'search',
+      'tui.hint_filter': 'filter',
+      'tui.hint_undo': 'undo',
+      'tui.hint_settings': 'settings',
+      'tui.hint_help': 'help',
+      'tui.hint_quit': 'quit',
+      'form.title': 'New reminder',
+      'form.step': '1/4 Info',
+      'form.name': 'Name',
+      'form.name_ph': '<span class="term-cursor">N</span>etflix, Spotify, VPN…',
+      'form.url': 'URL',
+      'form.tags': 'Tags',
+      'form.tags_val': 'streaming, monthly',
+      'form.comma': 'comma-separated',
+      'form.next': 'next',
+      'form.back': 'back',
+      'form.cancel': 'cancel',
+      'notif.title': 'Notifications',
+      'notif.step': '3/4 Notifications',
+      'notif.macos': 'macOS notification',
+      'notif.ntfy': 'ntfy notification',
+      'notif.quiet': 'Quiet hours (22:00–08:00)',
+      'notif.sound': 'Sound on notification',
+      'notif.remind': 'Remind 3 days before',
+      'feat.label': 'Features',
+      'feat.title': "Everything you need, nothing you don't",
+      'feat.f1_h': 'Zero configuration',
+      'feat.f1_p': 'Install, run, done. No config files, no cloud signup, no API keys. Your data lives in <code>~/.config/billmind/</code>.',
+      'feat.f2_h': 'Flexible intervals',
+      'feat.f2_p': 'Weekly, monthly, yearly, custom day counts, or one-time payments. Reminders reset automatically after each cycle.',
+      'feat.f3_h': 'Background daemon',
+      'feat.f3_p': 'Checks payments every hour via launchd / systemd / schtasks. No servers, no dependencies — just your OS scheduler.',
+      'feat.f4_h': 'Vim-style navigation',
+      'feat.f4_p': 'j/k to move, gg/G to jump, / to search, dd to delete. Familiar keybindings for anyone who lives in the terminal.',
+      'feat.f5_h': 'Push to your phone',
+      'feat.f5_p': 'Free push notifications via ntfy.sh — pick any topic name, subscribe in the app, done. No signup, no tracking.',
+      'feat.f6_h': 'Undo & backups',
+      'feat.f6_p': 'Press <code>u</code> to undo any action. Automatic backups (last 10) in case something really goes sideways.',
+      'stages.label': 'The Triad',
+      'stages.title': 'Three notification stages per cycle',
+      'stages.desc': 'Each reminder fires exactly three times — never more, never less. Quiet hours respected. Missed notifications catch up intelligently.',
+      'stages.s1_num': '01 — SOFT',
+      'stages.s1_name': 'Gentle nudge',
+      'stages.s1_when': 'N days before due date',
+      'stages.s1_ex': 'Hetzner VPS — payment<br>in 3 day(s) (May 01)',
+      'stages.s2_num': '02 — URGENT',
+      'stages.s2_name': 'Pay today',
+      'stages.s2_when': 'On due date',
+      'stages.s2_ex': 'Hetzner VPS —<br>payment today!',
+      'stages.s3_num': '03 — CRITICAL',
+      'stages.s3_name': 'Overdue',
+      'stages.s3_when': 'After due date',
+      'stages.s3_ex': 'Hetzner VPS —<br>overdue by 2 day(s)',
+      'install.label': 'Install',
+      'install.title': 'Get up and running in seconds',
+      'install.tab_brew': 'Homebrew',
+      'install.tab_src': 'From source',
+      'install.tab_bin': 'Binary',
+      'install.bin_text': '<span class="prompt">↓</span>Download pre-built binaries for macOS, Linux & Windows\nfrom the Releases page on GitHub.',
+      'install.open': 'Open →',
+      'install.note': 'Requires Go 1.24+ · <span style="color: var(--lavender)">terminal-notifier</span> recommended on macOS',
+      'footer.copyright': '© 2026 billmind · MIT License · made by <a href="https://github.com/curkan" class="author">@curkan</a>',
+      'footer.github': 'GitHub',
+      'footer.releases': 'Releases',
+      'footer.issues': 'Issues',
+      'copy.default': 'Copy',
+      'copy.done': 'Copied ✓'
+    },
+    ru: {
+      'page.title': 'billmind — TUI для отслеживания подписок и регулярных платежей',
+      'nav.features': 'Возможности',
+      'nav.notifications': 'Уведомления',
+      'nav.install': 'Установка',
+      'nav.docs': 'Документация',
+      'nav.star': 'Star',
+      'hero.badge': 'v0.1.0 — НОВЫЙ РЕЛИЗ',
+      'hero.title': 'TUI для <b>подписок</b> и <b>регулярных платежей</b>',
+      'hero.desc': 'Никогда не забывайте оплатить VPS, домен, Netflix или что угодно ещё — прямо из терминала. Три стадии уведомлений, тихие часы и пуши на телефон через ntfy.sh.',
+      'hero.btn_start': 'Начать',
+      'hero.btn_github': 'Открыть на GitHub',
+      'annot.tabs': 'Вкладки как в tmux<br>с активной сессией',
+      'annot.list': 'Список подписок<br>с датой оплаты',
+      'annot.vim': 'Vim-навигация<br>и выделение',
+      'annot.total': 'Общее число<br>напоминаний',
+      'annot.interval': 'Интервал и теги<br>с цветовой кодировкой',
+      'annot.open': 'Быстрое открытие<br>URL в браузере',
+      'annot.keys': 'Подсказки клавиш',
+      'tui.total': 'Всего: 10',
+      'tui.h_name': 'Название',
+      'tui.h_due': 'Оплата',
+      'tui.h_interval': 'Интервал',
+      'tui.h_tags': 'Теги',
+      'tui.hint_add': 'добавить',
+      'tui.hint_edit': 'править',
+      'tui.hint_delete': 'удалить',
+      'tui.hint_pay': 'оплачено',
+      'tui.hint_open': 'открыть',
+      'tui.hint_search': 'поиск',
+      'tui.hint_filter': 'фильтр',
+      'tui.hint_undo': 'отмена',
+      'tui.hint_settings': 'настройки',
+      'tui.hint_help': 'справка',
+      'tui.hint_quit': 'выход',
+      'form.title': 'Новое напоминание',
+      'form.step': '1/4 Инфо',
+      'form.name': 'Название',
+      'form.name_ph': '<span class="term-cursor">Н</span>етфликс, Спотифай, VPN…',
+      'form.url': 'URL',
+      'form.tags': 'Теги',
+      'form.tags_val': 'стриминг, месяц',
+      'form.comma': 'через запятую',
+      'form.next': 'далее',
+      'form.back': 'назад',
+      'form.cancel': 'отмена',
+      'notif.title': 'Уведомления',
+      'notif.step': '3/4 Уведомления',
+      'notif.macos': 'Уведомление macOS',
+      'notif.ntfy': 'Уведомление ntfy',
+      'notif.quiet': 'Тихие часы (22:00–08:00)',
+      'notif.sound': 'Звук уведомления',
+      'notif.remind': 'Напомнить за 3 дня',
+      'feat.label': 'Возможности',
+      'feat.title': 'Всё, что нужно, и ничего лишнего',
+      'feat.f1_h': 'Нулевая конфигурация',
+      'feat.f1_p': 'Установил, запустил — готово. Никаких конфигов, облачных аккаунтов и API-ключей. Ваши данные — в <code>~/.config/billmind/</code>.',
+      'feat.f2_h': 'Гибкие интервалы',
+      'feat.f2_p': 'Еженедельно, ежемесячно, ежегодно, произвольное число дней или разовый платёж. Напоминания перезапускаются автоматически.',
+      'feat.f3_h': 'Фоновый демон',
+      'feat.f3_p': 'Проверяет платежи каждый час через launchd / systemd / schtasks. Никаких серверов — только планировщик вашей ОС.',
+      'feat.f4_h': 'Vim-навигация',
+      'feat.f4_p': 'j/k — движение, gg/G — прыжки, / — поиск, dd — удаление. Привычные хоткеи для всех, кто живёт в терминале.',
+      'feat.f5_h': 'Пуши на телефон',
+      'feat.f5_p': 'Бесплатные пуши через ntfy.sh — выбираете любое имя топика, подписываетесь в приложении, готово. Без регистрации и трекинга.',
+      'feat.f6_h': 'Undo и бэкапы',
+      'feat.f6_p': 'Нажмите <code>u</code>, чтобы отменить действие. Автоматические бэкапы (последние 10) — на случай, если всё пошло не так.',
+      'stages.label': 'Триада',
+      'stages.title': 'Три стадии уведомлений за цикл',
+      'stages.desc': 'Каждое напоминание срабатывает ровно три раза — не больше и не меньше. Тихие часы соблюдаются. Пропущенные уведомления догоняют вас аккуратно.',
+      'stages.s1_num': '01 — МЯГКОЕ',
+      'stages.s1_name': 'Лёгкий пинок',
+      'stages.s1_when': 'За N дней до срока',
+      'stages.s1_ex': 'Hetzner VPS — оплата<br>через 3 дн. (01 мая)',
+      'stages.s2_num': '02 — СРОЧНОЕ',
+      'stages.s2_name': 'Оплатить сегодня',
+      'stages.s2_when': 'В день оплаты',
+      'stages.s2_ex': 'Hetzner VPS —<br>оплата сегодня!',
+      'stages.s3_num': '03 — КРИТИЧНОЕ',
+      'stages.s3_name': 'Просрочено',
+      'stages.s3_when': 'После даты оплаты',
+      'stages.s3_ex': 'Hetzner VPS —<br>просрочено на 2 дн.',
+      'install.label': 'Установка',
+      'install.title': 'Запуск за секунды',
+      'install.tab_brew': 'Homebrew',
+      'install.tab_src': 'Из исходников',
+      'install.tab_bin': 'Бинарник',
+      'install.bin_text': '<span class="prompt">↓</span>Скачайте готовые бинарники для macOS, Linux и Windows\nсо страницы Releases на GitHub.',
+      'install.open': 'Открыть →',
+      'install.note': 'Требуется Go 1.24+ · на macOS рекомендуется <span style="color: var(--lavender)">terminal-notifier</span>',
+      'footer.copyright': '© 2026 billmind · Лицензия MIT · автор — <a href="https://github.com/curkan" class="author">@curkan</a>',
+      'footer.github': 'GitHub',
+      'footer.releases': 'Релизы',
+      'footer.issues': 'Issues',
+      'copy.default': 'Копировать',
+      'copy.done': 'Скопировано ✓'
+    }
+  };
+
+  function applyLang(lang) {
+    if (!I18N[lang]) lang = 'en';
+    const dict = I18N[lang];
+    document.documentElement.lang = lang;
+    document.title = dict['page.title'];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key] !== undefined) el.textContent = dict[key];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const key = el.getAttribute('data-i18n-html');
+      if (dict[key] !== undefined) el.innerHTML = dict[key];
+    });
+    document.querySelectorAll('.lang-switch button').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    // reset copy buttons label to localized default
+    document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
+      btn.textContent = dict['copy.default'];
+    });
+    try { localStorage.setItem('billmind-lang', lang); } catch (_) {}
+  }
+
+  document.querySelectorAll('.lang-switch button').forEach(btn => {
+    btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+  });
+
+  (function initLang() {
+    let saved = null;
+    try { saved = localStorage.getItem('billmind-lang'); } catch (_) {}
+    const nav = (navigator.language || 'en').toLowerCase();
+    const lang = saved || (nav.startsWith('ru') ? 'ru' : 'en');
+    applyLang(lang);
+  })();
+
   document.querySelectorAll('.install-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.install-tab').forEach(t => t.classList.remove('active'));
@@ -1249,12 +1515,13 @@ from the Releases page on GitHub.</code>
   document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
     btn.addEventListener('click', () => {
       navigator.clipboard.writeText(btn.dataset.copy).then(() => {
-        const orig = btn.textContent;
-        btn.textContent = 'Copied ✓';
+        const lang = document.documentElement.lang in I18N ? document.documentElement.lang : 'en';
+        const dict = I18N[lang];
+        btn.textContent = dict['copy.done'];
         btn.style.color = 'var(--green)';
         btn.style.borderColor = 'var(--green)';
         setTimeout(() => {
-          btn.textContent = orig;
+          btn.textContent = dict['copy.default'];
           btn.style.color = '';
           btn.style.borderColor = '';
         }, 1500);
